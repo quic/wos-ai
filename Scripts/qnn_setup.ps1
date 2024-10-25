@@ -532,7 +532,7 @@ Function download_install_VS_Studio {
             }
             else {
                     Write-Output "Downloading the VS Studio..." 
-                    download_file -url $vsStudioUrl -downloadfile $vsStudioDownloadPath
+                    $result = download_file -url $vsStudioUrl -downloadfile $vsStudioDownloadPath
                     if ($result) {
                         Write-Output "VS Studio is downloaded at : $vsStudioDownloadPath" 
                     } 
