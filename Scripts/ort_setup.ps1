@@ -331,27 +331,27 @@ Function download_install_redistributable {
         # Download redistributable file 
         # Checking if redistributable already present 
         # If yes
-        if (Test-Path "HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\arm64") {
-            Write-Output "VS-Redistributable is already installed."
-        }
-        # Else downloading and installing redistributable
-        else {
-            Write-Output "Downloading VS-Redistributable..." 
-            $result = download_file -url $vsRedistributableUrl -downloadfile $vsRedistDownloadPath
-            if ($result) {
-                Write-Output "VS-Redistributable File is downloaded at : $vsRedistDownloadPath" 
-                Write-Output "installing VS-Redistributable..."
-                if (install_vsRedistributable) {
-                    Write-Output "VS-Redistributable is installed successfully." 
-                }
-                else {
-                    Write-Output "VS-Redistributable installation failed... from : $vsRedistDownloadPath" 
-                }
-            } 
-            else{
-                Write-Output "VS-Redistributable download failed.... Download the VS-Redistributable file from :  $vsRedistributableUrl and install" 
-            }
-        }
+        # if (Test-Path "HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\arm64") {
+        #     Write-Output "VS-Redistributable is already installed."
+        # }
+        # # Else downloading and installing redistributable
+        # else {
+	    Write-Output "Downloading VS-Redistributable..." 
+	    $result = download_file -url $vsRedistributableUrl -downloadfile $vsRedistDownloadPath
+	    if ($result) {
+		Write-Output "VS-Redistributable File is downloaded at : $vsRedistDownloadPath" 
+		Write-Output "installing VS-Redistributable..."
+		if (install_vsRedistributable) {
+		    Write-Output "VS-Redistributable is installed successfully." 
+		}
+		else {
+		    Write-Output "VS-Redistributable installation failed... from : $vsRedistDownloadPath" 
+		}
+	    } 
+	    else{
+		Write-Output "VS-Redistributable download failed.... Download the VS-Redistributable file from :  $vsRedistributableUrl and install" 
+	    }
+        # }
     }
 }
 
