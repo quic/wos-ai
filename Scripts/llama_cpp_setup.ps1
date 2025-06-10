@@ -29,9 +29,7 @@ $vsStudioUrl          = "https://download.visualstudio.microsoft.com/download/pr
 $sourceModelUrl       = "https://huggingface.co/bartowski/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct-Q4_K_M.gguf?download=true"
 
 # Prebuild library url
-$prebuildLibraryUrl = "https://github.com/ggerganov/llama.cpp/releases/download/b4239/llama-b4239-bin-win-llvm-arm64.zip"
-
-
+$prebuildLibraryUrl = "https://github.com/ggml-org/llama.cpp/releases/download/b5618/llama-b5618-bin-win-cpu-arm64.zip"
 
 # Define the cmake installation path.
 $cmakeInstallPath     = "C:\Program Files\CMake"
@@ -73,8 +71,8 @@ Function Set_Variables {
     $global:cmakeDownloaderPath  = "$downloadDirPath\cmake-3.30.4-windows-arm64.msi"
     $global:vsStudioDownloadPath = "$downloadDirPath\vs_Enterprise.exe"
     $global:sourceModelDownlaodPath = "$rootDirPath\Meta-Llama-3-8B-Instruct-Q4_K_M.gguf"
-    $global:prebuildLibraryDownlaodPath = "$downloadDirPath\llama-b4239-bin-win-llvm-arm64.zip"
-    $global:prebuild_unzipLocation = "$rootDirPath\llama-b4239-bin-win-llvm-arm64"
+    $global:prebuildLibraryDownlaodPath = "$downloadDirPath\llama-b5618-bin-win-cpu-arm64.zip"
+    $global:prebuild_unzipLocation = "$rootDirPath\llama-b5618-bin-win-cpu-arm64"
 
 }
 
