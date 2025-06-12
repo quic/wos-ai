@@ -772,12 +772,12 @@ Function llama_cpp_setup{
            py -3.12 -m venv $SDX_LLAMA_CPP_VENV_Path
         }
         # Check if the virtual environment was created successfully
-        if (Test-Path "$SDX_LLAMA_CPP_VENV_Path\Scripts\Activate.ps1") {
+        if (Test-Path "${SDX_LLAMA_CPP_VENV_Path}\Scripts\Activate.ps1") {
             # Activate the virtual environment
             & "$SDX_LLAMA_CPP_VENV_Path\Scripts\Activate.ps1"
             python -m pip install --upgrade pip
-            pip install huggingface_hub 
-	    pip install –r llama.cpp/requiremts.txt
+            pip install huggingface_hub
+	    pip install -r .\llama.cpp\requirements.txt 
         }
         Show-Progress -percentComplete 6 6
         Write-Output "***** Installation setup for LlaMA CPP *****"
@@ -791,7 +791,7 @@ Function Activate_LLAMA_CPP_VENV {
     )
     process {
         $SDX_LLAMA_CPP_VENV_Path = "$rootDirPath\$LLAMA_CPP_VENV"
-        $global:DIR_PATH      = $rootDirPath
+	cd $rootDirPath
         & "$SDX_LLAMA_CPP_VENV_Path\Scripts\Activate.ps1"
     }  
 }
