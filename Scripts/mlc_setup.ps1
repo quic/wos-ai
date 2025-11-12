@@ -632,6 +632,9 @@ Function MLC_LLM_Setup {
         download_install_git
         Show-Progress -percentComplete 4 5
 	Write-Output "Creating the conda env ... "
+	conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+	conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+	conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/msys2
         conda create -n MLC_VENV -c conda-forge "llvmdev=15" "cmake>=3.24" git rust numpy==1.26.4 decorator psutil typing_extensions scipy attrs git-lfs python=3.12 onnx clang_win-64 -y
         #conda activate MLC_VENV
         download_and_extract_mlc_utils -artifactsUrl $mlcLlmUtilsUrl -rootDirPath $rootDirPath
