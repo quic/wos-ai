@@ -420,7 +420,7 @@ Function ORT_CPU_Setup {
             # Activate the virtual environment
             & "$SDX_ORT_CPU_ENV_Path\Scripts\Activate.ps1"
             python -m pip install --upgrade pip
-            pip install onnxruntime==1.22.0
+            pip install onnxruntime
             pip install pillow
 	    pip install requests
         }
@@ -518,7 +518,7 @@ Function ORT_QNN_Setup {
             # Activate the virtual environment
             & "$SDX_ORT_QNN_ENV_Path\Scripts\Activate.ps1"
             python -m pip install --upgrade pip
-            pip install onnxruntime-qnn==1.22.0
+            pip install onnxruntime-qnn
             pip install pillow
 	    pip install requests
         }
