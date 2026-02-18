@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Copies the required QNN HTP runtime files for Hexagon v73/v81 from a QAIRT SDK to a specified destination directory.
+    Copies the required files from a QAIRT SDK to a specified destination directory.
 
 .DESCRIPTION
     Usage:
@@ -8,13 +8,13 @@
 
     Parameters:
         - <Source SDK Path> : Root directory of the QAIRT SDK installation  
-                              (e.g., C:\Qualcomm\AIStack\QAIRT\2.43.0.260128)
+                              (e.g., C:\Qualcomm\AIStack\QAIRT\2.42.0.251225)
 
         - <Destination Directory> : Directory where the required runtime files will be copied.  
                                    If the directory does not exist, it will be created automatically.  
                                    (e.g., C:\Users\HCKTest\Desktop\sanjeev\workspace\QAIRT_dlls)
 .EXAMPLE
-    .\CopyNpuFiles.ps1 "C:\Qualcomm\AIStack\QAIRT\2.43.0.260128" "C:\Users\HCKTest\Desktop\sanjeev\workspace\QAIRT_dlls"
+    .\CopyNpuFiles.ps1 "C:\Qualcomm\AIStack\QAIRT\2.42.0.251225" "C:\Users\HCKTest\Desktop\sanjeev\workspace\QAIRT_dlls"
 #>
 
 param(
