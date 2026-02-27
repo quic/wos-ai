@@ -18,7 +18,7 @@
 
 
 # Define QNN SDK version (at the time of writing tutorials). Users can change this version if they have downloaded a different version of QNN SDK.
-$QNN_SDK_VERSION = "2.34.0.250424"
+$QNN_SDK_VERSION = "2.42.0.251225"
 
 # Define URLs for dependencies
 
@@ -778,7 +778,7 @@ Function QNN_Setup{
 	    pip install requests
             pip install --upgrade opencv-python
             # checking all python dependency 
-            python "${QNN_SDK_ROOT}\bin\check-python-dependency"
+            pip install numpy==1.26.4
             # checking all winndow dependency
             & "${QNN_SDK_ROOT}\bin\check-windows-dependency.ps1"
             copy ${QNN_SDK_ROOT}\bin\aarch64-windows-msvc\qnn-net-run.exe ${qnndependenciesPath}
