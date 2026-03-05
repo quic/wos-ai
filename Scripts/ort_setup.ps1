@@ -1,6 +1,6 @@
 # =============================================================================
 #
-# Copyright (c) 2024, Qualcomm Innovation Center, Inc. All rights reserved.
+# Copyright (c) 2024-26, Qualcomm Innovation Center, Inc. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -461,7 +461,7 @@ Function ORT_HF_Setup {
         # Check if virtual environment was created
         if (-Not (Test-Path -Path  $SDX_ORT_HF_ENV_Path))
         {
-           py -3.12 -m venv $SDX_ORT_HF_ENV_Path
+           py -3.10 -m venv $SDX_ORT_HF_ENV_Path
         }
         # Check if the virtual environment was created successfully
         if (Test-Path "$SDX_ORT_HF_ENV_Path\Scripts\Activate.ps1") {
