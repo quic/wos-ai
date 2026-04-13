@@ -30,7 +30,7 @@
 $pythonUrl = "https://www.python.org/ftp/python/3.12.6/python-3.12.6-amd64.exe"
 
 # ONNX model file for image prediction used in tutorials.
-$modelUrl =  "https://qaihub-public-assets.s3.us-west-2.amazonaws.com/apidoc/mobilenet_v2.onnx"
+# $modelUrl =  "https://qaihub-public-assets.s3.us-west-2.amazonaws.com/apidoc/mobilenet_v2.onnx"
 
 # URL for downloading the Visual Studio Redistributable for ARM64. Visual studio is used during model exection on HTP(NPU) backend.
 $vsRedistributableUrl = "https://aka.ms/vs/17/release/vc_redist.arm64.exe"
@@ -43,7 +43,7 @@ $licenseUrl        = "https://raw.githubusercontent.com/quic/wos-ai/refs/heads/m
 <#  Artifacts for tutorials, including:
     - io_utils.py         : Utility file for preprocessing images and postprocessing to get top 5 predictions.
 #>
-$io_utilsUrl       = "https://raw.githubusercontent.com/quic/wos-ai/refs/heads/main/Artifacts/io_utils.py"
+# $io_utilsUrl       = "https://raw.githubusercontent.com/quic/wos-ai/refs/heads/main/Artifacts/io_utils.py"
 
 
 ############################ python installation path ##################################
@@ -52,6 +52,12 @@ $username =  (Get-ChildItem Env:\Username).value
 
 $pythonInstallPath = "C:\Users\$username\AppData\Local\Programs\Python\Python312"
 $pythonScriptsPath = $pythonInstallPath+"\Scripts"
+
+#### GIT INSTALL ####
+# Git download URL (64-bit Windows installer)
+$gitUrl             = "https://github.com/git-for-windows/git/releases/download/v2.47.1.windows.1/Git-2.47.1-64-bit.exe"
+$gitVersion         = "2.47.1"
+#### GIT INSTALL ####
 
 
 <#
@@ -71,11 +77,11 @@ $pythonScriptsPath = $pythonInstallPath+"\Scripts"
     Note: Users can change this path to another location if desired.
 #>
 
-$ORT_CPU_ENV_Path = "Python_Venv\SDX_ORT_CPU_ENV"
-$ORT_QNN_ENV_Path = "Python_Venv\SDX_ORT_QNN_ENV"
-$ORT_HF_ENV_Path  = "Python_Venv\SDX_ORT_HF_ENV"
-
-$Mobilenet_Folder_path = "Models\Mobilenet_V2"
+$OLIVE_ENV_Path = "Python_Venv\SDX_OLIVE_ENV"
+$Olive_Folder_path = "Models\Olive"
+$Olive_json_url = "https://raw.githubusercontent.com/quic/wos-ai/refs/heads/main/Scripts/olive_mobilenet_qnn_ep.json"
+$Olive_data_url = "https://raw.githubusercontent.com/quic/wos-ai/refs/heads/main/Scripts/olive_download_files.py"
+$Olive_user_script_url = "https://raw.githubusercontent.com/quic/wos-ai/refs/heads/main/Scripts/olive_user_script.py"
 
 ####################################################################################
 ############################      Function        ##################################
@@ -100,6 +106,11 @@ Function Set_Variables {
     $global:pythonDownloaderPath = "$downloadDirPath\python-3.12.6-amd64.exe" 
     $global:vsRedistDownloadPath = "$downloadDirPath\vc_redist.arm64.exe"
 
+     #### GIT INSTALL ####
+    # Define the path where the Git installer will be downloaded.
+    $global:gitDownloaderPath = "$downloadDirPath\Git-$gitVersion-64-bit.exe"
+    #### GIT INSTALL ####
+
     # Define the license download path.
     $global:lincensePath      = "$rootDirPath\License"
 
@@ -108,16 +119,12 @@ Function Set_Variables {
     if (-Not (Test-Path $debugFolder)) {
         New-Item -ItemType Directory -Path $debugFolder
     }
-    # Define folder path for mobilenet artifacts.
-    $global:mobilenetFolder = "$rootDirPath\$Mobilenet_Folder_path"
+    # Define folder path for Olive artifacts.
+    $global:OliveFolder = "$rootDirPath\$Olive_Folder_path"
     # Create the Root folder if it doesn't exist
-    if (-Not (Test-Path $mobilenetFolder)) {
-        New-Item -ItemType Directory -Path $mobilenetFolder
+    if (-Not (Test-Path $OliveFolder)) {
+        New-Item -ItemType Directory -Path $OliveFolder
     }
-    # Define the artifacts download path.
-    $global:io_utilsPath       = "$mobilenetFolder\io_utils.py"
-    # Define the mobilenet model download path.
-    $global:modelFilePath      = "$mobilenetFolder\mobilenet_v2.onnx"
     
 }
 
@@ -199,6 +206,69 @@ Function install_python {
     }
 }
 
+#### GIT INSTALL ####
+Function install_git {
+    param()
+    process {
+        # Run Git installer silently
+        Start-Process -FilePath $gitDownloaderPath -ArgumentList "/VERYSILENT /NORESTART /NOCANCEL /SP- /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /COMPONENTS=icons,ext\reg\shellhere,assoc,assoc_sh" -Wait
+        # Refresh PATH so git.exe is visible in the current session
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine) + ";" + [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
+        # Verify Git installation
+        try {
+            $installedVer = (git --version 2>&1)
+            if ($installedVer -match "\d+\.\d+\.\d+") {
+                return $true
+            }
+        } catch {}
+        return $false
+    }
+}
+
+Function get_installed_git_version {
+    param()
+    process {
+        try {
+            $verString = git --version 2>&1
+            if ($verString -match "(\d+\.\d+\.\d+)") {
+                return $matches[1]
+            }
+        } catch {}
+        return ""
+    }
+}
+
+Function download_install_git {
+    param()
+    process {
+        $installedVer = get_installed_git_version
+        # If Git is already installed with the expected version, skip
+        if ($installedVer -eq $gitVersion) {
+            Write-Output "Git $gitVersion is already installed. Skipping."
+            return
+        }
+        # If a different version is installed, notify the user
+        if ($installedVer -ne "") {
+            Write-Output "Git $installedVer is currently installed. Installing Git $gitVersion..."
+        } else {
+            Write-Output "Git not found. Downloading Git $gitVersion..."
+        }
+        $result = download_file -url $gitUrl -downloadfile $gitDownloaderPath
+        if ($result) {
+            Write-Output "Git installer downloaded at: $gitDownloaderPath"
+            Write-Output "Installing Git $gitVersion..."
+            if (install_git) {
+                Write-Output "Git $gitVersion installed successfully."
+            } else {
+                Write-Output "Git installation failed. Please install manually from: $gitUrl"
+            }
+        } else {
+            Write-Output "Git download failed. Download manually from: $gitUrl"
+        }
+    }
+}
+#### GIT INSTALL ####
+
 Function download_script_license{
     param()
     process{
@@ -216,28 +286,6 @@ Function download_script_license{
             }
             else{
                 Write-Output "License download failed. Download from $licenseUrl"
-            }
-        }
-    }
-}
-
-Function download_mobilenet_artifacts{
-    param ()
-    process{
-        # io_utils for pre and post processing for the mobilenet 
-        # Checking if io_utils.py already present
-        # If yes
-        if(Test-Path $io_utilsPath){
-            Write-Output "io_utils.py is already downloaded at : $io_utilsPath"
-        }
-        # Else dowloading
-        else{
-            $result = download_file -url $io_utilsUrl -downloadfile $io_utilsPath
-            if($result){
-                Write-Output "io_utils.py is downloaded at : $io_utilsPath"
-            }
-            else{
-                Write-Output "io_utils.py download failed. Download from $io_utilsUrl"
             }
         }
     }
@@ -273,30 +321,6 @@ Function download_install_python {
     }
 }
 
-Function download_onnxmodel {
-    param()
-    process {
-        # Download Model file 
-        # Checking if mobilenet.onnx already present 
-        # If yes
-        if (Test-Path $modelFilePath) {
-            Write-Output "ONNX File already present at : $modelFilePath" # -ForegroundColor Green
-        }
-        # Else downloading
-        else {
-            Write-Output "Downloading the onnx model ..." 
-            $result = download_file -url $modelUrl -downloadfile $modelFilePath
-            # Checking for successful download
-            if ($result) {
-                Write-Output "Onnx File is downloaded at : $modelFilePath" 
-            } 
-            else{
-                Write-Output "Onnx download failed. Download the onnx file from :  $modelUrl" 
-            }
-        }
-    }
-}
-
 
 Function download_install_redistributable {
     param()
@@ -325,14 +349,6 @@ Function download_install_redistributable {
             Write-Output "VS-Redistributable download failed.... Download the VS-Redistributable file from :  $vsRedistributableUrl and install" 
         }
         # }
-    }
-}
-
-Function mobilenet_artifacts{
-    param ()
-    process {
-        download_onnxmodel
-        download_mobilenet_artifacts
     }
 }
 
@@ -375,6 +391,24 @@ Function Check_Setup {
             }
         }
 
+        #### GIT INSTALL ####
+        # Check if Git is installed
+        $installedGitVer = get_installed_git_version
+        if ($installedGitVer -ne "") {
+            $results += [PSCustomObject]@{
+                Component = "Git"
+                Status    = "Successful"
+                Comments  = "git version $installedGitVer"
+            }
+        } else {
+            $results += [PSCustomObject]@{
+                Component = "Git"
+                Status    = "Failed"
+                Comments  = "Download from $gitUrl"
+            }
+        }
+        #### GIT INSTALL ####
+
         # Output the results as a table
         $results | Format-Table -AutoSize
 
@@ -394,105 +428,7 @@ Function Check_Setup {
 }
 
 
-Function ORT_CPU_Setup {
-    param(
-        [string]$rootDirPath = "C:\WoS_AI"
-        )
-    process {
-    	# Set the permission on PowerShell to execute the command. If prompted, accept and enter the desired input to provide execution permission.
-	Set-ExecutionPolicy RemoteSigned 
-        Set_Variables -rootDirPath $rootDirPath
-        download_install_python
-        Show-Progress -percentComplete 1 4
-        download_install_redistributable
-        Show-Progress -percentComplete 2 4
-        download_script_license
-        mobilenet_artifacts
-        Show-Progress -percentComplete 3 4
-        $SDX_ORT_CPU_ENV_Path = "$rootDirPath\$ORT_CPU_ENV_Path"
-        # Check if virtual environment was created
-        if (-Not (Test-Path -Path  $SDX_ORT_CPU_ENV_Path))
-        {
-           py -3.12 -m venv $SDX_ORT_CPU_ENV_Path
-        }
-        # Check if the virtual environment was created successfully
-        if (Test-Path "$SDX_ORT_CPU_ENV_Path\Scripts\Activate.ps1") {
-            # Activate the virtual environment
-            & "$SDX_ORT_CPU_ENV_Path\Scripts\Activate.ps1"
-            python -m pip install --upgrade pip
-            pip install onnxruntime==1.24.4
-            pip install pillow
-	    pip install requests
-        }
-        Show-Progress -percentComplete 4 4
-        Write-Output "***** Installation for ORT-CPU *****"
-        Check_Setup -logFilePath "$debugFolder\ORT_CPU_Setup_Debug.log"
-        Invoke-Command { & "powershell.exe" } -NoNewScope
-    }
-}
-
-Function Activate_ORT_CPU_VENV {
-    param ( 
-        [string]$rootDirPath = "C:\WoS_AI" 
-    )
-    process {
-        $SDX_ORT_CPU_ENV_Path = "$rootDirPath\$ORT_CPU_ENV_Path"
-        $global:DIR_PATH      = $rootDirPath
-        cd "$DIR_PATH\$Mobilenet_Folder_path"
-        & "$SDX_ORT_CPU_ENV_Path\Scripts\Activate.ps1"
-    }  
-}
-
-Function ORT_HF_Setup {
-    param(
-        [string]$rootDirPath = "C:\WoS_AI"
-        )
-    process {
-    	# Set the permission on PowerShell to execute the command. If prompted, accept and enter the desired input to provide execution permission.
-	Set-ExecutionPolicy RemoteSigned 
-        Set_Variables -rootDirPath $rootDirPath
-        download_install_python
-        Show-Progress -percentComplete 1 4
-        download_install_redistributable
-        Show-Progress -percentComplete 2 4
-        download_script_license
-        Show-Progress -percentComplete 3 4
-        $SDX_ORT_HF_ENV_Path = "$rootDirPath\$ORT_HF_ENV_Path"
-        # Check if virtual environment was created
-        if (-Not (Test-Path -Path  $SDX_ORT_HF_ENV_Path))
-        {
-           py -3.10 -m venv $SDX_ORT_HF_ENV_Path
-        }
-        # Check if the virtual environment was created successfully
-        if (Test-Path "$SDX_ORT_HF_ENV_Path\Scripts\Activate.ps1") {
-            # Activate the virtual environment
-            & "$SDX_ORT_HF_ENV_Path\Scripts\Activate.ps1"
-            python -m pip install --upgrade pip
-            pip install optimum[onnxruntime]
-            pip install onnxruntime-directml
-            pip install pillow
-	    pip install requests
-        }
-        Show-Progress -percentComplete 4 4
-        Write-Output "***** Installation for Hugging Face Optimum + ONNX-RT *****"
-        Check_Setup -logFilePath "$debugFolder\ORT_HF_Setup_Debug.log"
-        Invoke-Command { & "powershell.exe" } -NoNewScope
-    }
-}
-
-Function Activate_ORT_HF_VENV {
-    param ( 
-        [string]$rootDirPath = "C:\WoS_AI" 
-    )
-    process {
-        $SDX_ORT_HF_ENV_Path = "$rootDirPath\$ORT_HF_ENV_Path"
-        $global:DIR_PATH     = $rootDirPath
-        cd "$DIR_PATH\$Mobilenet_Folder_path"
-        & "$SDX_ORT_HF_ENV_Path\Scripts\Activate.ps1"
-    }  
-}
-
-Function ORT_QNN_Setup {
+Function OLIVE_Setup {
     param(
         [string]$rootDirPath = "C:\WoS_AI"
         )
@@ -501,43 +437,49 @@ Function ORT_QNN_Setup {
      	Set-ExecutionPolicy RemoteSigned 
         Set_Variables -rootDirPath $rootDirPath
         download_install_python
-        Show-Progress -percentComplete 1 4
+        Show-Progress -percentComplete 1 5
         download_install_redistributable
-        Show-Progress -percentComplete 2 4
+        Show-Progress -percentComplete 2 5
         download_script_license
-        mobilenet_artifacts
-        Show-Progress -percentComplete 3 4
-        $SDX_ORT_QNN_ENV_Path = "$rootDirPath\$ORT_QNN_ENV_Path"
+        Show-Progress -percentComplete 3 5
+        download_install_git
+        Show-Progress -percentComplete 4 5
+		download_file -url $Olive_data_url -downloadfile $Olive_Folder_path\olive_download_files.py
+		download_file -url $Olive_user_script_url -downloadfile $Olive_Folder_path\olive_user_script.py
+        $SDX_OLIVE_ENV_Path = "$rootDirPath\$OLIVE_ENV_Path"
         # Check if virtual environment was created
-        if (-Not (Test-Path -Path  $SDX_ORT_QNN_ENV_Path))
+        if (-Not (Test-Path -Path  $SDX_OLIVE_ENV_Path))
         {
-           py -3.12 -m venv $SDX_ORT_QNN_ENV_Path
+           py -3.12 -m venv $SDX_OLIVE_ENV_Path
         }
         # Check if the virtual environment was created successfully
-        if (Test-Path "$SDX_ORT_QNN_ENV_Path\Scripts\Activate.ps1") {
+        if (Test-Path "$SDX_OLIVE_ENV_Path\Scripts\Activate.ps1") {
             # Activate the virtual environment
-            & "$SDX_ORT_QNN_ENV_Path\Scripts\Activate.ps1"
+            & "$SDX_OLIVE_ENV_Path\Scripts\Activate.ps1"
             python -m pip install --upgrade pip
             pip install onnxruntime-qnn==1.24.4
+			pip install olive-ai==0.9.1
+			pip install transformers==4.56.0
             pip install pillow
-	    pip install requests
+			pip install requests
+			pip install torchvision
         }
-        Show-Progress -percentComplete 4 4
+        Show-Progress -percentComplete 5 5
         Write-Output "***** Installation for ONNX-QNN *****"
         Check_Setup -logFilePath "$debugFolder\ORT_QNN_Setup_Debug.log"
         Invoke-Command { & "powershell.exe" } -NoNewScope
     }
 }
 
-Function Activate_ORT_QNN_VENV {
+Function Activate_OLIVE_VENV {
     param ( 
         [string]$rootDirPath = "C:\WoS_AI" 
     )
     process {
-        $SDX_ORT_QNN_ENV_Path = "$rootDirPath\$ORT_QNN_ENV_Path"
+        $SDX_OLIVE_ENV_Path = "$rootDirPath\$OLIVE_ENV_Path"
         $global:DIR_PATH      = $rootDirPath
-        cd "$DIR_PATH\$Mobilenet_Folder_path"
-        & "$SDX_ORT_QNN_ENV_Path\Scripts\Activate.ps1"
+        cd "$DIR_PATH\$Olive_Folder_path"
+        & "$SDX_OLIVE_ENV_Path\Scripts\Activate.ps1"
     }  
 }
 

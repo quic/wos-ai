@@ -396,7 +396,7 @@ Function WinML_Setup {
             # Activate the virtual environment
             & "$SDX_WinML_ENV_Path\Scripts\Activate.ps1"
             python -m pip install --upgrade pip
-            pip install --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/ORT-Nightly/pypi/simple --extra-index-url https://pypi.org/simple onnxruntime-winml==1.22.0
+            pip install wasdk-Microsoft.Windows.AI.MachineLearning[all] wasdk-Microsoft.Windows.ApplicationModel.DynamicDependency.Bootstrap onnxruntime-windowsml
 			pip install pillow==11.2.1 numpy==2.2.6
 
 			pip install requests
