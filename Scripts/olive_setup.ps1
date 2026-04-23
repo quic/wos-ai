@@ -348,7 +348,110 @@ Function download_install_redistributable {
         else{
             Write-Output "VS-Redistributable download failed.... Download the VS-Redistributable file from :  $vsRedistributableUrl and install" 
         }
-        # }
+    }
+}
+
+function download_olive_sd15_recipe {
+    param()
+
+    process {
+        $repoUrl      = "https://github.com/microsoft/olive-recipes.git"
+        $repoDir      = "olive-recipes"
+        $sparsePath   = "sd-legacy-stable-diffusion-v1-5/olive"
+        $targetPath   = Join-Path $repoDir $sparsePath
+
+        # Check if repo + folder already exists
+        if (Test-Path $targetPath) {
+            Write-Output "Olive SD v1.5 recipe already present at : $targetPath"
+        }
+        else {
+            Write-Output "Cloning Olive SD v1.5 recipe..."
+
+            try {
+                cd Models\Olive
+                git clone --depth 1 --filter=blob:none --sparse $repoUrl
+                Set-Location $repoDir
+                git sparse-checkout set $sparsePath
+                Set-Location ..
+
+                if (Test-Path $targetPath) {
+                    Write-Output "Olive SD v1.5 recipe cloned successfully at : $targetPath"
+                }
+                else {
+                    Write-Output "Clone completed, but recipe path not found: $targetPath"
+                }
+            }
+            catch {
+                Write-Output "Olive SD v1.5 recipe clone failed."
+                Write-Output $_
+            }
+        }
+    }
+}
+
+function Fix-OliveSdFootprintsFileName {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$rootpath
+    )
+
+    process {
+        $filePath = Join-Path $rootpath `
+            "Models\Olive\olive-recipes\sd-legacy-stable-diffusion-v1-5\olive\sd_utils\ort.py"
+
+        if (-not (Test-Path $filePath)) {
+            Write-Output "File not found: $filePath"
+            return
+        }
+
+        $content = Get-Content $filePath -Raw
+
+        $oldText = '"footprint.json"'
+        $newText = '"footprints.json"'
+
+        if ($content -notmatch [regex]::Escape($oldText)) {
+            Write-Output "Expected text not found. File already patched or incompatible version."
+            return
+        }
+
+        $updatedContent = $content -replace [regex]::Escape($oldText), $newText
+        Set-Content -Path $filePath -Value $updatedContent
+
+        Write-Output "Updated footprints filename in:"
+        Write-Output $filePath
+    }
+}
+
+function Fix-OliveSdClipTextAttnImplementation {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$rootpath
+    )
+
+    process {
+        $filePath = Join-Path $rootpath `
+            "Models\Olive\olive-recipes\sd-legacy-stable-diffusion-v1-5\olive\user_script.py"
+
+        if (-not (Test-Path $filePath)) {
+            Write-Output "File not found: $filePath"
+            return
+        }
+
+        $content = Get-Content $filePath -Raw
+
+        $oldText = 'CLIPTextModel.from_pretrained(base_model_id, subfolder="text_encoder")'
+        $newText = 'CLIPTextModel.from_pretrained(base_model_id, subfolder="text_encoder", attn_implementation="eager")'
+
+        if ($content -notmatch [regex]::Escape($oldText)) {
+            Write-Output "Expected CLIPTextModel line not found. File already patched or incompatible version."
+            return
+        }
+
+        $updatedContent = $content -replace [regex]::Escape($oldText), $newText
+        Set-Content -Path $filePath -Value $updatedContent
+
+        Write-Output "Updated CLIPTextModel attention implementation in:"
+        Write-Output $filePath
     }
 }
 
@@ -437,15 +540,20 @@ Function OLIVE_Setup {
      	Set-ExecutionPolicy RemoteSigned 
         Set_Variables -rootDirPath $rootDirPath
         download_install_python
-        Show-Progress -percentComplete 1 5
+        Show-Progress -percentComplete 1 6
         download_install_redistributable
-        Show-Progress -percentComplete 2 5
+        Show-Progress -percentComplete 2 6
         download_script_license
-        Show-Progress -percentComplete 3 5
+        Show-Progress -percentComplete 3 6
         download_install_git
-        Show-Progress -percentComplete 4 5
-		download_file -url $Olive_data_url -downloadfile $Olive_Folder_path\olive_download_files.py
-		download_file -url $Olive_user_script_url -downloadfile $Olive_Folder_path\olive_user_script.py
+        Show-Progress -percentComplete 4 6
+	    download_file -url $Olive_data_url -downloadfile $Olive_Folder_path\olive_download_files.py
+	    download_file -url $Olive_user_script_url -downloadfile $Olive_Folder_path\olive_user_script.py
+        Show-Progress -percentComplete 5 6
+        download_olive_sd15_recipe
+        Fix-OliveSdFootprintsFileName -rootpath $rootDirPath
+        Fix-OliveSdClipTextAttnImplementation -rootpath $rootDirPath
+        
         $SDX_OLIVE_ENV_Path = "$rootDirPath\$OLIVE_ENV_Path"
         # Check if virtual environment was created
         if (-Not (Test-Path -Path  $SDX_OLIVE_ENV_Path))
@@ -457,14 +565,27 @@ Function OLIVE_Setup {
             # Activate the virtual environment
             & "$SDX_OLIVE_ENV_Path\Scripts\Activate.ps1"
             python -m pip install --upgrade pip
+            pip install onnxruntime==1.24.4
             pip install onnxruntime-qnn==1.24.4
 			pip install olive-ai==0.9.1
-			pip install transformers==4.56.0
+			pip install transformers==4.51.3
             pip install pillow
 			pip install requests
-			pip install torchvision
+			pip install torchvision==0.19.1
+            #sd olive_recipe dependency
+            pip install accelerate==1.9.0
+            pip install aiohttp==3.13.3
+            pip install diffusers==0.31.0
+            pip install evaluate==0.4.5
+            pip install hf-xet==1.1.7
+            pip install torch==2.4.1
+            pip install onnx==1.16.1
+            pip install optimum==1.25.0
+            pip install protobuf==6.33.1
+            pip install tabulate==0.9.0
+            pip install torch-fidelity==0.3.0
         }
-        Show-Progress -percentComplete 5 5
+        Show-Progress -percentComplete 6 6
         Write-Output "***** Installation for ONNX-QNN *****"
         Check_Setup -logFilePath "$debugFolder\ORT_QNN_Setup_Debug.log"
         Invoke-Command { & "powershell.exe" } -NoNewScope
