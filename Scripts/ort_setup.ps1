@@ -73,6 +73,7 @@ $pythonScriptsPath = $pythonInstallPath+"\Scripts"
 
 $ORT_CPU_ENV_Path = "Python_Venv\SDX_ORT_CPU_ENV"
 $ORT_QNN_ENV_Path = "Python_Venv\SDX_ORT_QNN_ENV"
+$ORT_QNN_Plugin_ENV_Path = "Python_Venv\SDX_ORT_QNN_PLUGIN_ENV"
 $ORT_HF_ENV_Path  = "Python_Venv\SDX_ORT_HF_ENV"
 
 $Mobilenet_Folder_path = "Models\Mobilenet_V2"
@@ -528,6 +529,42 @@ Function ORT_QNN_Setup {
         Invoke-Command { & "powershell.exe" } -NoNewScope
     }
 }
+Function ORT_QNN_PLUGIN_Setup {
+    param(
+        [string]$rootDirPath = "C:\WoS_AI"
+        )
+    process {
+    	# Set the permission on PowerShell to execute the command. If prompted, accept and enter the desired input to provide execution permission.
+     	Set-ExecutionPolicy RemoteSigned 
+        Set_Variables -rootDirPath $rootDirPath
+        download_install_python
+        Show-Progress -percentComplete 1 4
+        download_install_redistributable
+        Show-Progress -percentComplete 2 4
+        download_script_license
+        mobilenet_artifacts
+        Show-Progress -percentComplete 3 4
+        $SDX_ORT_QNN_Plugin_ENV_Path = "$rootDirPath\$ORT_QNN_Plugin_ENV_Path"
+        # Check if virtual environment was created
+        if (-Not (Test-Path -Path  $SDX_ORT_QNN_Plugin_ENV_Path))
+        {
+           py -3.12 -m venv $SDX_ORT_QNN_Plugin_ENV_Path
+        }
+        # Check if the virtual environment was created successfully
+        if (Test-Path "$SDX_ORT_QNN_Plugin_ENV_Path\Scripts\Activate.ps1") {
+            # Activate the virtual environment
+            & "$SDX_ORT_QNN_Plugin_ENV_Path\Scripts\Activate.ps1"
+            python -m pip install --upgrade pip
+            pip install onnxruntime-qnn
+            pip install pillow
+	    pip install requests
+        }
+        Show-Progress -percentComplete 4 4
+        Write-Output "***** Installation for ONNX-QNN *****"
+        Check_Setup -logFilePath "$debugFolder\ORT_QNN_Setup_Debug.log"
+        Invoke-Command { & "powershell.exe" } -NoNewScope
+    }
+}
 
 Function Activate_ORT_QNN_VENV {
     param ( 
@@ -538,6 +575,17 @@ Function Activate_ORT_QNN_VENV {
         $global:DIR_PATH      = $rootDirPath
         cd "$DIR_PATH\$Mobilenet_Folder_path"
         & "$SDX_ORT_QNN_ENV_Path\Scripts\Activate.ps1"
+    }  
+}
+Function Activate_ORT_QNN_PLUGIN_VENV {
+    param ( 
+        [string]$rootDirPath = "C:\WoS_AI" 
+    )
+    process {
+        $SDX_ORT_QNN_Plugin_ENV_Path = "$rootDirPath\$ORT_QNN_Plugin_ENV_Path"
+        $global:DIR_PATH      = $rootDirPath
+        cd "$DIR_PATH\$Mobilenet_Folder_path"
+        & "$SDX_ORT_QNN_Plugin_ENV_Path\Scripts\Activate.ps1"
     }  
 }
 
