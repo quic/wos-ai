@@ -1,3 +1,6 @@
+# Copyright (c) Qualcomm Technologies, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
 import requests
 from tqdm import tqdm
 import os

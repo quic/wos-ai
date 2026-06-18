@@ -1,3 +1,6 @@
+# Copyright (c) Qualcomm Technologies, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
 # =============================================================================
 #
 # Copyright (c) 2024, Qualcomm Innovation Center, Inc. All rights reserved.

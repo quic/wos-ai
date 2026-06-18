@@ -1,3 +1,6 @@
+// Copyright (c) Qualcomm Technologies, Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 #include <sstream> // For std::ostringstream
 #include <iostream>
 #include <string>

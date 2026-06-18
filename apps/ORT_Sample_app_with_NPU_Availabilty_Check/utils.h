@@ -1,3 +1,6 @@
+// Copyright (c) Qualcomm Technologies, Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 #include <windows.h>
 #include <dxcore.h>
 #include <d3d12.h>
