@@ -1,0 +1,39 @@
+# =============================================================================
+# requirements.txt
+# =============================================================================
+#
+# INSTALL GUIDE
+# -------------
+# 1. Create a virtual environment (recommended):
+#
+#    Windows (x64):
+#      python -m venv .venv
+#      .venv\Scripts\activate
+#
+#    Linux / macOS:
+#      python -m venv .venv
+#      source .venv/bin/activate
+#
+# 2. Install requirements:
+#      pip install -r requirements.txt
+# -------------------------------------------------------------------------------
+
+# Core server requirements 
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+pydantic>=2.0
+pyyaml>=6.0
+python-multipart>=0.0.9      # required for file upload endpoints
+sse-starlette>=2.1.0         # Server-Sent Events for streaming responses
+prometheus-client>=0.20.0    # Prometheus text-format metrics endpoint
+
+# Cloud / OpenAI-compatible backend requirements
+openai>=1.30.0               # AsyncOpenAI client (also used for Azure/vLLM)
+httpx>=0.27.0                # async HTTP (used by openai SDK)
+
+# UI 
+streamlit>=1.35.0
+
+# Token counting 
+tiktoken>=0.7.0              # accurate BPE token counting
+jinja2>=3.0                  # chat-template rendering for local/plugin models

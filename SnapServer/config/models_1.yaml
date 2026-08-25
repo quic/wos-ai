@@ -1,0 +1,39 @@
+# models.yaml — Model Registry
+# ==============================
+# All models registered here are available to clients via the API.
+# You can have all the models present in 1 yaml file which will be mapped to 1 port, and register them on same server. 
+# Or create different files so that each model can be called in different port.
+
+# MODEL LOADING STRATEGY
+# ==========================
+# lazy_load: true  (DEFAULT) — model loads when client first calls it
+# lazy_load: false — model pre-loads at server startup
+
+# MODEL LIFECYCLE ENDPOINTS (callable from Swagger UI at /docs)
+# -------------------------------------------------------------
+#   POST  /v1/models/{id}/load          — load on demand (lazy models)
+#   POST  /v1/models/{id}/unload        — free NPU/GPU memory without restart
+#   POST  /v1/models/{id}/reload        — unload + reload (picks up config changes)
+#   POST  /v1/models/{id}/reset_dialog  — clear KV cache only (ms, not seconds)
+#   GET   /v1/models/{id}/system_prompt — read current system prompt
+#   PATCH /v1/models/{id}/system_prompt — update system prompt at runtime
+
+
+models:
+  
+  # Sample 2 for ASR model present locally
+  - id: model_name # Model name eg: whisper_base
+    backend: plugin
+    plugin_module: sample_plugins/sample_asr_plugin.py #sample example plugin
+    plugin_class: WhisperASRPlugin # Main class of the plugin created
+    source_dir: <full_path_to_local>/asr # Full path to model repo
+
+    # any user args need to be passed to plugin module
+    encoder_path: <full_path_to_local>/asr/whisper_base-encoder/model.onnx
+    decoder_path: <full_path_to_local>/asr/whisper_base-decoder/model.onnx
+    use_qnn: true
+
+    owned_by: qualcomm
+
+
+

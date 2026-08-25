@@ -1,0 +1,34 @@
+# models.yaml — Model Registry
+# ==============================
+# All models registered here are available to clients via the API.
+# You can have all the models present in 1 yaml file which will be mapped to 1 port, and register them on same server. 
+# Or create different files so that each model can be called in different port.
+
+# MODEL LOADING STRATEGY
+# ==========================
+# lazy_load: true  (DEFAULT) — model loads when client first calls it
+# lazy_load: false — model pre-loads at server startup
+
+# MODEL LIFECYCLE ENDPOINTS (callable from Swagger UI at /docs)
+# -------------------------------------------------------------
+#   POST  /v1/models/{id}/load          — load on demand (lazy models)
+#   POST  /v1/models/{id}/unload        — free NPU/GPU memory without restart
+#   POST  /v1/models/{id}/reload        — unload + reload (picks up config changes)
+#   POST  /v1/models/{id}/reset_dialog  — clear KV cache only (ms, not seconds)
+#   GET   /v1/models/{id}/system_prompt — read current system prompt
+#   PATCH /v1/models/{id}/system_prompt — update system prompt at runtime
+
+models:
+  
+  # Sample 1 for Genie Models present on device
+  - id: model_name # Write any Model name you want to use
+    backend: plugin 
+    plugin_module: sample_plugins/genie_plugin.py
+    plugin_class: GeniePlugin
+    genie_model_dir: <full_path_to_local>/genie_bundle # Has model (context binaries and libs to run Genie)
+    genie_config: qwen3-htp-model-config.json # genie_config.json
+    
+    tokenizer_path: <full_path_to_local>/genie_bundle/tokenizer.json  # optional (required if the file name is changed)
+    system_prompt: "<|im_start|>user<|im_end|><|im_start|>assistant<think></think>" # priority 2, can give at api call also (this will be priority 1)
+    idle_timeout_minutes: 0 # optional, mesured in seconds before auto-unload (default None = never) unless server killed or unload api
+    owned_by: qualcomm
