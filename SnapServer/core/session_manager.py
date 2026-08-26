@@ -584,7 +584,7 @@ class SessionManager:
         backend_key = self._model_backend.get(model_id, "")
         lock = await self._get_infer_lock(model_id)
         async with lock:
-             try:
+            try:
                 result = await self._backend_for(model_id).moderate(model_id, input, **kwargs)
                 safe_inc(MODEL_INFERENCE_TOTAL, (model_id, backend_key, "moderate", "success"))
                 return result
@@ -607,8 +607,7 @@ class SessionManager:
         backend_key = self._model_backend.get(model_id, "")
         lock = await self._get_infer_lock(model_id)
         async with lock:
-            return await self._backend_for(model_id).image_generate(
-                 try:
+            try:
                 result = await self._backend_for(model_id).image_generate(
                     model_id, prompt, n, size, quality, response_format, style, **kwargs)
                 safe_inc(MODEL_INFERENCE_TOTAL, (model_id, backend_key, "image_generate", "success"))

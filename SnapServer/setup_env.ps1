@@ -22,6 +22,26 @@ Set-Location $ScriptDir
 Write-Info "Working directory: $ScriptDir"
 
 # =============================================================================
+# STEP 0 - Allow local scripts to run (so .venv\Scripts\Activate.ps1 works)
+# =============================================================================
+Write-Step "Checking PowerShell execution policy"
+
+try {
+    $currentPolicy = Get-ExecutionPolicy -Scope CurrentUser
+    if ($currentPolicy -eq "Restricted" -or $currentPolicy -eq "Undefined") {
+        Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+        Write-OK "Execution policy for CurrentUser set to RemoteSigned (was: $currentPolicy)"
+        Write-Info "This lets you run .venv\Scripts\Activate.ps1 without a 'running scripts is disabled' error."
+    } else {
+        Write-Info "Execution policy for CurrentUser is already '$currentPolicy' - no change needed."
+    }
+} catch {
+    Write-Warn "Could not update execution policy (may be enforced by a machine/Group Policy): $_"
+    Write-Warn "If '.venv\Scripts\activate' fails later with a script-disabled error, run this once yourself:"
+    Write-Warn "  Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
+}
+
+# =============================================================================
 # STEP 1 - Find Python 3.10+
 # =============================================================================
 Write-Step "Checking for Python 3.10+"
