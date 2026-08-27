@@ -1,6 +1,3 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
-# SPDX-License-Identifier: BSD-3-Clause-Clear
-
 # SnapServer : Snapdragon X Series AI Model Server
 
 > Run local AI models on Qualcomm Snapdragon NPU and cloud models (on Qualcomm AIC100 or others) behind a single drop-in OpenAI API.
@@ -115,3 +112,7 @@ curl http://localhost:8000/v1/models -H "Authorization: Bearer my-secret-key"
 ```
 
 Public endpoints (no auth): `/health`, `/status`, `/metrics`, `/metrics/prometheus`, `/docs`
+
+
+### Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+### SPDX-License-Identifier: BSD-3-Clause-Clear
