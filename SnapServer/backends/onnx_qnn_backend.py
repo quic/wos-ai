@@ -1,3 +1,6 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 """
 ONNX QNN Backend — local inference via ONNX Runtime with QNN Execution Provider.
 

@@ -32,3 +32,7 @@ models:
     system_prompt: "<|im_start|>user<|im_end|><|im_start|>assistant<think></think>" # priority 2, can give at api call also (this will be priority 1)
     idle_timeout_minutes: 0 # optional, mesured in seconds before auto-unload (default None = never) unless server killed or unload api
     owned_by: qualcomm
+
+
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear

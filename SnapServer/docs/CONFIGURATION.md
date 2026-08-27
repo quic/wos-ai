@@ -1,3 +1,6 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # Configuration — models.yaml (if you want to have all models registered in same server)
 
 `config/models.yaml` is the **only file you need edit** to add, remove, or configure models.

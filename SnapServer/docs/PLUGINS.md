@@ -1,3 +1,6 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # Plugin System
 
 The plugin system lets you wrap any existing Python inference code in ~30 lines without rewriting it.

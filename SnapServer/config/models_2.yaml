@@ -30,3 +30,7 @@ models:
     # lazy_load: true  (default — no need to specify)
     # idle_timeout_minutes: 0  (cloud is stateless — no benefit to unloading)
     owned_by: openai
+
+
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
