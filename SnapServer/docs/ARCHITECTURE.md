@@ -1,6 +1,3 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
-# SPDX-License-Identifier: BSD-3-Clause-Clear
-
 # Architecture
 
 ## Stack
@@ -114,3 +111,10 @@ Different models run concurrently.
 | `backends/cloud_backend.py` | Async HTTP proxy, cached `AsyncOpenAI` clients |
 | `utils/inference_plugin.py` | `InferencePlugin` ABC — user contract |
 | `utils/prompt_formatter.py` | HF Jinja2 chat templates with generic fallback |
+
+
+<!-- Footer -->
+<div style="position: fixed; bottom: 0; width: 100%; text-align: center; font-size: small; color: gray; opacity: 0.5;">
+  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. <br>
+  SPDX-License-Identifier: BSD-3-Clause-Clear
+</div>

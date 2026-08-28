@@ -114,5 +114,8 @@ curl http://localhost:8000/v1/models -H "Authorization: Bearer my-secret-key"
 Public endpoints (no auth): `/health`, `/status`, `/metrics`, `/metrics/prometheus`, `/docs`
 
 
-### Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
-### SPDX-License-Identifier: BSD-3-Clause-Clear
+<!-- Footer -->
+<div style="position: fixed; bottom: 0; width: 100%; text-align: center; font-size: small; color: gray; opacity: 0.5;">
+  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. <br>
+  SPDX-License-Identifier: BSD-3-Clause-Clear
+</div>

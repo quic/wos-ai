@@ -1,6 +1,3 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
-# SPDX-License-Identifier: BSD-3-Clause-Clear
-
 # Plugin System
 
 The plugin system lets you wrap any existing Python inference code in ~30 lines without rewriting it.
@@ -310,3 +307,9 @@ def image_variation(
 Reset KV cache without unloading weights:
 ```bash
 curl -X POST http://localhost:8000/v1/models/my-llm/reset_dialog
+
+<!-- Footer -->
+<div style="position: fixed; bottom: 0; width: 100%; text-align: center; font-size: small; color: gray; opacity: 0.5;">
+  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. <br>
+  SPDX-License-Identifier: BSD-3-Clause-Clear
+</div>

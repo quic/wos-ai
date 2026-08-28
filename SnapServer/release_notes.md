@@ -1,6 +1,3 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
-# SPDX-License-Identifier: BSD-3-Clause-Clear
-
 # Release Notes
 
 ## v1.0.0 — Initial Release
@@ -35,3 +32,10 @@ SnapServer : a FastAPI server that exposes a full OpenAI-compatible REST API and
 - [docs/CONFIGURATION.md](docs/CONFIGURATION.md) — full `models.yaml` reference
 - [docs/API.md](docs/API.md) — endpoint reference with examples
 - [docs/PLUGINS.md](docs/PLUGINS.md) — plugin contract and sample plugin index
+
+
+<!-- Footer -->
+<div style="position: fixed; bottom: 0; width: 100%; text-align: center; font-size: small; color: gray; opacity: 0.5;">
+  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. <br>
+  SPDX-License-Identifier: BSD-3-Clause-Clear
+</div>

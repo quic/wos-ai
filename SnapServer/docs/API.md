@@ -1,6 +1,3 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
-# SPDX-License-Identifier: BSD-3-Clause-Clear
-
 # API Reference
 
 Base URL: `http://localhost:8000`
@@ -175,3 +172,9 @@ curl http://localhost:8000/metrics
 
 # Metrics (Prometheus scrape format)
 curl http://localhost:8000/metrics/prometheus
+
+<!-- Footer -->
+<div style="position: fixed; bottom: 0; width: 100%; text-align: center; font-size: small; color: gray; opacity: 0.5;">
+  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. <br>
+  SPDX-License-Identifier: BSD-3-Clause-Clear
+</div>

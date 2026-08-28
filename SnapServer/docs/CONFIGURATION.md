@@ -1,6 +1,3 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
-# SPDX-License-Identifier: BSD-3-Clause-Clear
-
 # Configuration — models.yaml (if you want to have all models registered in same server)
 
 `config/models.yaml` is the **only file you need edit** to add, remove, or configure models.
@@ -179,3 +176,10 @@ POST /v1/models/{id}/reload        # unload + reload (picks up config changes)
 POST /v1/models/{id}/reset_dialog  # clear KV cache only (~ms, weights stay on NPU)
 GET  /v1/models/{id}/system_prompt # read current system prompt
 PATCH /v1/models/{id}/system_prompt # update system prompt at runtime
+
+
+<!-- Footer -->
+<div style="position: fixed; bottom: 0; width: 100%; text-align: center; font-size: small; color: gray; opacity: 0.5;">
+  Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. <br>
+  SPDX-License-Identifier: BSD-3-Clause-Clear
+</div>
