@@ -1,0 +1,15 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+modality: image
+input_type: pose_estimation
+output_type: pose
+resize: [256, 256]
+resize_mode: contain
+color_format: RGB
+# model bakes in its own BGR + CenterNet normalization; input must be [0,1] only
+mean: [0.0, 0.0, 0.0]
+std: [1.0, 1.0, 1.0]
+interpolation: bilinear
+score_threshold: 0.9
+keypoint_format: xyc
+num_keypoints: 17

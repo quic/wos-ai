@@ -1,0 +1,26 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# AOT-GAN image inpainting
+#
+# Source: 
+#   models/_shared/repaint/model.py  get_input_spec()  → 512×512, RGB, float32 [0,1]
+#   models/_shared/repaint/utils.py  preprocess_inputs()
+#   utils/image_processing.py        preprocess_PIL_image() → /255 only, no mean/std
+#   model.py                         get_channel_last_inputs/outputs → NHWC in ONNX
+#
+# Preprocessing (verified):
+#   image : resize 512×512, RGB, /255 → float32 [0,1], NHWC [1,512,512,3]
+#   mask  : resize 512×512, grayscale, /255>0 → binary float32 {0,1}, NHWC [1,512,512,1]
+#   No ImageNet mean/std subtraction — the model's forward() does 2x-1 internally
+#   and that is baked into the exported ONNX graph.
+#
+modality: image
+input_type: inpainting
+output_type: inpainting
+resize: [512, 512]
+resize_mode: stretch
+color_format: RGB
+mean: [0.0, 0.0, 0.0]
+std: [1.0, 1.0, 1.0]
+interpolation: bilinear
+input_layout: NHWC

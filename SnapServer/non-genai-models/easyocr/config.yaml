@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+modality: image
+input_type: ocr_detection
+output_type: mask_list
+resize: [800, 608]
+resize_mode: contain
+color_format: RGB
+mean: [0.485, 0.456, 0.406]
+std: [0.229, 0.224, 0.225]
+interpolation: bilinear
+score_threshold: 0.2
+text_threshold: 0.5
+link_threshold: 0.3
+# Recognizer input: [1, 64, 800, 1] NHWC grayscale
+recognizer_h: 64
+recognizer_w: 800

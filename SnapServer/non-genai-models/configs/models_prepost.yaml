@@ -1,0 +1,180 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# models_prepost.yaml — pre_post integration with WoS server
+# =====================================================
+# All paths are relative to the WoS server root, or can be set as absolute paths.
+# Set PREPOST_CODEBASE env var to the absolute path of the repo codebase directory
+# Set MODEL_BASE env var to the directory containing your compiled .onnx models
+#
+# Each local model uses backend: plugin and a plugin from <model>/plugin.py
+# YAML env var expansion: ${ENV_VAR}
+#
+# Quick start (PowerShell):
+#   $env:PREPOST_CODEBASE = "C:\Scripts-to-run-AIHub-models-on-device-with-OpenAI"
+#   $env:MODEL_BASE       = "C:\pre-post\XElite_models"
+#   python run_model.py --model <id> --input <file> --qnn
+#
+# Or pass flags directly:
+#   python run_model.py --model aotgan --input photo.jpg --qnn `
+#     --codebase "C:\Scripts-to-run-AIHub-models-on-device-with-OpenAI" `
+#     --model-base "C:\pre-post\XElite_models"
+
+models:
+
+  # ─── Audio models ──────────────────────────────────────────────────────────
+
+  - id: yamnet
+    backend: plugin
+    plugin_module: ${PREPOST_CODEBASE}/yamnet/plugin.py
+    plugin_class: YamNetPlugin
+    model_path: ${MODEL_BASE}/yamnet-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/yamnet.onnx
+    config_path: ${PREPOST_CODEBASE}/yamnet/config.yaml
+    use_qnn: false
+    lazy_load: true
+    idle_timeout_minutes: 30
+    owned_by: qualcomm
+
+  - id: whisper-base
+    backend: plugin
+    plugin_module: ${PREPOST_CODEBASE}/whisper_base/plugin.py
+    plugin_class: WhisperBasePlugin
+    encoder_path: ${MODEL_BASE}/whisper_base-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/encoder.onnx
+    decoder_path: ${MODEL_BASE}/whisper_base-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/decoder.onnx
+    config_path: ${PREPOST_CODEBASE}/whisper_base/config.yaml
+    use_qnn: false
+    max_decode_len: 224
+    lazy_load: true
+    idle_timeout_minutes: 30
+    owned_by: qualcomm
+
+  - id: zipformer
+    backend: plugin
+    plugin_module: ${PREPOST_CODEBASE}/zipformer/plugin.py
+    plugin_class: ZipformerPlugin
+    encoder_path: ${MODEL_BASE}/zipformer-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/encoder.onnx
+    decoder_path: ${MODEL_BASE}/zipformer-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/decoder.onnx
+    joiner_path: ${MODEL_BASE}/zipformer-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/joiner.onnx
+    config_path: ${PREPOST_CODEBASE}/zipformer/config.yaml
+    use_qnn: false
+    lazy_load: true
+    idle_timeout_minutes: 30
+    owned_by: qualcomm
+
+  # ─── Image classification ──────────────────────────────────────────────────
+
+  - id: inception-v3
+    backend: plugin
+    plugin_module: ${PREPOST_CODEBASE}/inception_v3/plugin.py
+    plugin_class: InceptionV3Plugin
+    model_path: ${MODEL_BASE}/inception_v3-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/inception_v3.onnx
+    config_path: ${PREPOST_CODEBASE}/inception_v3/config.yaml
+    use_qnn: false
+    lazy_load: true
+    idle_timeout_minutes: 30
+    owned_by: qualcomm
+
+  - id: mobilenet-v2
+    backend: plugin
+    plugin_module: ${PREPOST_CODEBASE}/mobilenet_v2/plugin.py
+    plugin_class: MobileNetV2Plugin
+    model_path: ${MODEL_BASE}/mobilenet_v2-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/mobilenet_v2.onnx
+    config_path: ${PREPOST_CODEBASE}/mobilenet_v2/config.yaml
+    use_qnn: false
+    lazy_load: true
+    idle_timeout_minutes: 30
+    owned_by: qualcomm
+
+  # ─── Object detection ──────────────────────────────────────────────────────
+
+  - id: yolov3
+    backend: plugin
+    plugin_module: ${PREPOST_CODEBASE}/yolov3/plugin.py
+    plugin_class: YoloV3Plugin
+    model_path: ${MODEL_BASE}/yolov3-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/yolov3.onnx
+    config_path: ${PREPOST_CODEBASE}/yolov3/config.yaml
+    use_qnn: false
+    lazy_load: true
+    idle_timeout_minutes: 30
+    owned_by: qualcomm
+
+  # ─── Pose estimation ───────────────────────────────────────────────────────
+
+  - id: centernet-pose
+    backend: plugin
+    plugin_module: ${PREPOST_CODEBASE}/centernet_pose/plugin.py
+    plugin_class: CenterNetPosePlugin
+    model_path: ${MODEL_BASE}/centernet_pose-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/centernet_pose.onnx
+    config_path: ${PREPOST_CODEBASE}/centernet_pose/config.yaml
+    use_qnn: false
+    lazy_load: true
+    idle_timeout_minutes: 30
+    owned_by: qualcomm
+
+  # ─── Segmentation ──────────────────────────────────────────────────────────
+
+  - id: unet-segmentation
+    backend: plugin
+    plugin_module: ${PREPOST_CODEBASE}/unet_segmentation/plugin.py
+    plugin_class: UnetSegmentationPlugin
+    model_path: ${MODEL_BASE}/unet_segmentation-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/unet_segmentation.onnx
+    config_path: ${PREPOST_CODEBASE}/unet_segmentation/config.yaml
+    use_qnn: false
+    lazy_load: true
+    idle_timeout_minutes: 30
+    owned_by: qualcomm
+
+  # ─── OCR ────────────────────────────────────────────────────────────────────
+
+  - id: easyocr
+    backend: plugin
+    plugin_module: ${PREPOST_CODEBASE}/easyocr/plugin.py
+    plugin_class: EasyOCRPlugin
+    model_path: ${MODEL_BASE}/easyocr-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/detector.onnx
+    recognizer_path: ${MODEL_BASE}/easyocr-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/recognizer.onnx
+    config_path: ${PREPOST_CODEBASE}/easyocr/config.yaml
+    vocab_path: ${PREPOST_CODEBASE}/easyocr/easyocr_en_vocab.json
+    use_qnn: false
+    lazy_load: true
+    idle_timeout_minutes: 30
+    owned_by: qualcomm
+
+  - id: paddleocr
+    backend: plugin
+    plugin_module: ${PREPOST_CODEBASE}/paddle-ocr/plugin.py
+    plugin_class: PaddleOCRPlugin
+    source_dir: ${PREPOST_CODEBASE}/paddle-ocr
+    venv_path: ${PREPOST_CODEBASE}/paddle-ocr/venv
+    det_model_path: ${MODEL_BASE}/paddleocr/det_model_static.onnx
+    rec_model_path: ${MODEL_BASE}/paddleocr/rec_static.onnx
+    rec_char_dict_path: ${PREPOST_CODEBASE}/paddle-ocr/assets/en_dict.txt
+    vis_font_path: ${PREPOST_CODEBASE}/paddle-ocr/assets/simfang.ttf
+    use_npu: true
+    npu_backend: ${QNN_SDK_ROOT}/QnnHtp.dll
+    det_db_unclip_ratio: 1.5
+    det_db_box_thresh: 0.5
+    lazy_load: true
+    idle_timeout_minutes: 30
+    owned_by: qualcomm
+
+  # ─── Image inpainting ─────────────────────────────────────────────────────
+
+  - id: aotgan
+    backend: plugin
+    plugin_module: ${PREPOST_CODEBASE}/aotgan/plugin.py
+    plugin_class: AOTGANPlugin
+    model_path: ${MODEL_BASE}/aotgan-precompiled_qnn_onnx-float-qualcomm_snapdragon_x_elite/aotgan.onnx
+    config_path: ${PREPOST_CODEBASE}/aotgan/config.yaml
+    use_qnn: false
+    lazy_load: true
+    idle_timeout_minutes: 30
+    owned_by: qualcomm
+
+  # ─── Cloud fallback ────────────────────────────────────────────────────────
+
+  - id: gpt-4o
+    backend: cloud
+    provider: openai
+    model_name: gpt-4o
+    api_key_env: OPENAI_API_KEY
+    system_prompt: "You are a helpful AI assistant."
+    owned_by: openai

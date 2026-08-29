@@ -1,0 +1,16 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+modality: image
+input_type: classification
+output_type: classification
+resize: [299, 299]
+resize_mode: crop
+color_format: RGB
+# Model expects [0, 1] float input (bakes its own x*2-1 transform internally)
+mean: [0.0, 0.0, 0.0]
+std: [1.0, 1.0, 1.0]
+interpolation: bilinear
+# Not shipped in this repo. Set labels_file to your own ImageNet class-name
+# file to get named labels; without it, results return numeric class indices.
+# labels_file: ../common/imagenet_labels.txt
+top_k: 5

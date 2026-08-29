@@ -1,0 +1,18 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+modality: image
+input_type: object_detection
+output_type: detection
+resize: [640, 640]
+resize_mode: contain
+color_format: RGB
+mean: [0.0, 0.0, 0.0]
+std: [1.0, 1.0, 1.0]
+pad_value: 0.0
+interpolation: bilinear
+score_threshold: 0.50
+iou_threshold: 0.45
+box_format: xyxy
+# Not shipped in this repo. Set labels_file to your own COCO class-name
+# file to get named labels; without it, results return numeric class indices.
+# labels_file: coco_labels.txt

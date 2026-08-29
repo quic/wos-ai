@@ -1,0 +1,14 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+modality: audio
+input_type: log_mel
+output_type: attention_greedy
+sample_rate: 16000
+channels: 1
+chunk_duration_ms: 30000
+n_fft: 400
+hop_length: 160
+n_mels: 80
+feature_norm: whisper
+vocab_file: whisper_vocab.json
+beam_width: 5

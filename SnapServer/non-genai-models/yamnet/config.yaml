@@ -1,0 +1,14 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+modality: audio
+input_type: log_mel
+output_type: softmax_top_k
+sample_rate: 16000
+channels: 1
+chunk_duration_ms: 960
+n_fft: 512
+hop_length: 160
+n_mels: 64
+feature_norm: none
+labels_file: yamnet_labels.txt
+top_k: 5

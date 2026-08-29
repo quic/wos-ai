@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+tests/
+venv/
+.venv/
+models_completed.md

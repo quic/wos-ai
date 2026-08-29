@@ -1,0 +1,15 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+modality: image
+input_type: segmentation
+output_type: segmentation
+resize: [1280, 640]
+resize_mode: contain
+color_format: RGB
+# model expects [0,1] range only; no external mean/std shift
+mean: [0.0, 0.0, 0.0]
+std: [1.0, 1.0, 1.0]
+interpolation: bilinear
+# model is sensitive to zero-padding; reflect avoids hard edges at pad boundaries
+pad_mode: reflect
+score_threshold: 0.3

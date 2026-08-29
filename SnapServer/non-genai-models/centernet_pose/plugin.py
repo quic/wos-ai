@@ -1,0 +1,62 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+"""
+CenterNet-Pose plugin — human pose estimation (17 COCO keypoints).
+output_type: pose
+"""
+from __future__ import annotations
+
+import json
+import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from typing import Dict
+
+try:
+    from utils.venv_plugin import VenvPlugin
+except ModuleNotFoundError:
+    class VenvPlugin:   # minimal stand-in when running outside the WoS server
+        pass
+
+
+class CenterNetPosePlugin(VenvPlugin):
+    def load(self, model_id: str, config: Dict) -> None:
+        from pipeline_core import ConfigLoader, ModelConfig, OnnxModelInspector, Preprocessor, Postprocessor
+        from pipeline_core import create_session
+
+        model_path  = config["model_path"]
+        config_path = config["config_path"]
+
+        inspector  = OnnxModelInspector(model_path, use_qnn=config.get("use_qnn", False))
+        loader     = ConfigLoader(config_path)
+        self._cfg  = ModelConfig(inspector, loader)
+        self._pre  = Preprocessor(self._cfg)
+        self._post = Postprocessor(self._cfg)
+        self._session, self._run_opts = create_session(
+            model_path, use_qnn=config.get("use_qnn", False)
+        )
+
+    def unload(self) -> None:
+        if hasattr(self, "_session"):
+            del self._session
+
+    def image_variation(self, image: bytes, n: int = 1, size: str = "1024x1024",
+                        response_format: str = "b64_json", **kwargs) -> list:
+        tensor  = self._pre.process(image)
+        outputs = self._session.run(None, {self._cfg.input_name: tensor}, self._run_opts)
+        result  = self._post.process(outputs)
+
+        if response_format == "url":
+            from pipeline_core import draw_pose_keypoints
+            png = draw_pose_keypoints(
+                self._pre._last_rgb_uint8, result.keypoints, result.scores,
+                self._cfg.score_threshold,
+            )
+            return [{"image_bytes": png}]
+
+        return [{"b64_json": json.dumps({
+            "keypoints": result.keypoints.tolist(),
+            "scores":    result.scores.tolist(),
+        })}]
